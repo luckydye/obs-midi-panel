@@ -65,3 +65,5 @@ node_modules/
 .env
 
 public/dock/main.bundle.js
+
+dist

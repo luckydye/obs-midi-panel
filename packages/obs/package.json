@@ -1,0 +1,9 @@
+{
+	"name": "obs",
+	"version": "1.0.0",
+	"description": "obs integration",
+	"main": "./OBS.ts",
+	"types": "./OBS.ts",
+	"author": "",
+	"license": "ISC"
+}

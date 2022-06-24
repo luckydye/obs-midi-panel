@@ -1,1 +1,1 @@
-# obs-midi-panel
+# OBS Midi scene switcher

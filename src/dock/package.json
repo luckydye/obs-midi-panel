@@ -1,0 +1,27 @@
+{
+	"name": "dock",
+	"version": "1.0.0",
+	"description": "dock",
+	"main": "index.js",
+	"scripts": {
+		"dev": "vite serve --force",
+		"build": "vite build"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/luckydye/obs-tools-widget.git"
+	},
+	"devDependencies": {
+		"vite": "^2.9.12"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/luckydye/obs-tools-widget/issues"
+	},
+	"homepage": "https://github.com/luckydye/obs-tools-widget#readme",
+	"dependencies": {
+		"lit": "latest",
+		"@luckydye/app-state": "^2.0.3"
+	}
+}

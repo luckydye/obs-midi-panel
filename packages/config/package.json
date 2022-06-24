@@ -1,0 +1,8 @@
+{
+	"name": "config",
+	"version": "1.0.0",
+	"description": "generic gamepad button mapping",
+	"main": "./Config.js",
+	"author": "",
+	"license": "ISC"
+}

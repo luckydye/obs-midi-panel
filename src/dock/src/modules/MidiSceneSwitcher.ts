@@ -4,18 +4,10 @@ import OBS from "obs";
 import { Midi } from "midi";
 import { customElement } from "lit/decorators.js";
 
-const Action = {
-	SCENE_SWITCH: 0,
-	TRIGGER_PRESET: 1,
-};
-
-const binds = Config.get("midi-binds") || [
-	// { midi: 156, action: Action.SCENE_SWITCH, itemId: 0 },
-	{ midi: 157, action: Action.TRIGGER_PRESET, itemId: 0 },
-];
+const binds = Config.get("midi-binds") || [{ midi: 157, itemId: 0 }];
 
 function createBind() {
-	binds.push({ midi: 157, action: Action.SCENE_SWITCH, itemId: 0 });
+	binds.push({ midi: 157, itemId: 0 });
 	saveBinds();
 }
 
@@ -116,15 +108,19 @@ export default class MidiSceneSwitcher extends LitElement {
 		super.connectedCallback();
 
 		Midi.onRedy(() => this.initMidi());
+
+		OBS.getScenes().then((scenes) => {
+			this.scenes = scenes.map((name) => {
+				return { name, value: name };
+			});
+		});
 	}
 
 	scenes = [];
 	midiDevices = [];
 
 	async initMidi() {
-		// @ts-ignore
 		const midiDevices = Midi.getDevices().map(([_, dev]) => {
-			// @ts-ignore
 			return { name: dev.name, value: dev.name };
 		});
 
@@ -144,12 +140,6 @@ export default class MidiSceneSwitcher extends LitElement {
 		Midi.onMessage((msg) => {
 			console.log(msg);
 		});
-
-		OBS.getScenes().then((scenes) => {
-			this.scenes = scenes.map((name) => {
-				return { name, value: name };
-			});
-		});
 	}
 
 	render() {
@@ -162,63 +152,61 @@ export default class MidiSceneSwitcher extends LitElement {
 				href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
 			/>
 
-			<obs-dock-tab-section section-title="Midi Scene Switcher">
-				<div class="row">
-					<div>
-						<dropdown-button
-							class="Action"
-							.options="${midiDevices}"
-							.value="${Config.get("midi-device")}"
-							@change="${(e) => {
-								this.handleMidiDeviceChange(e.target.value);
-								Config.set("midi-device", e.target.value.value);
-							}}"
-						></dropdown-button>
-					</div>
+			<div class="row">
+				<div>
+					<dropdown-button
+						class="Action"
+						.options="${midiDevices}"
+						.value="${Config.get("midi-device")}"
+						@change="${(e) => {
+							this.handleMidiDeviceChange(e.target.value);
+							Config.set("midi-device", e.target.value.value);
+						}}"
+					></dropdown-button>
+				</div>
+			</div>
+
+			<div class="list">
+				<div class="binding header">
+					<div>Midi</div>
+					<div>Scene</div>
+					<div>Item</div>
 				</div>
 
-				<div class="list">
-					<div class="binding header">
-						<div>Midi</div>
-						<div>Scene</div>
-						<div>Item</div>
-					</div>
+				${binds.map((bind) => {
+					return html`
+						<div class="binding">
+							<div class="midi-button">${bind.midi}</div>
 
-					${binds.map((bind) => {
-						return html`
-							<div class="binding">
-								<div class="midi-button">${bind.midi}</div>
+							<dropdown-button
+								class="Action"
+								.options="${scenes}"
+								.value="${bind.itemId}"
+								@change="${(e) => {
+									bind.itemId = e.target.value;
+									saveBinds();
+								}}"
+							></dropdown-button>
 
-								<dropdown-button
-									class="Action"
-									.options="${scenes}"
-									.value="${bind.itemId}"
-									@change="${(e) => {
-										bind.itemId = e.target.value;
-										saveBinds();
+							<div class="del-button">
+								<span
+									style="opacity: 0.5;"
+									class="material-symbols-outlined"
+									@click="${(e) => {
+										deleteBind(bind);
+										this.requestUpdate();
 									}}"
-								></dropdown-button>
-
-								<div class="del-button">
-									<span
-										style="opacity: 0.5;"
-										class="material-symbols-outlined"
-										@click="${(e) => {
-											deleteBind(bind);
-											this.requestUpdate();
-										}}"
-										>delete</span
-									>
-								</div>
+									>delete</span
+								>
 							</div>
-						`;
-					})}
+						</div>
+					`;
+				})}
 
-					<button class="create-btn" @click="${() => this.createBind()}">
-						Create Bind
-					</button>
-				</div>
-			</obs-dock-tab-section>
+				<button class="create-btn" @click="${() => this.createBind()}">
+					Create Bind
+				</button>
+			</div>
 		`;
 	}
 }

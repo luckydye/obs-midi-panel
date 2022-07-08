@@ -42,13 +42,15 @@ async function onMIDISuccess(midiAccess) {
 
 	devices.push(...inputs);
 
+	console.log("midi init success");
+
 	for (const callback of readyCallbacks) {
 		callback();
 	}
 }
 
-function onMIDIFailure() {
-	console.error("Could not access your MIDI devices.");
+function onMIDIFailure(err) {
+	console.error("Could not access your MIDI devices.", err.message);
 }
 
 function useInput(input) {
@@ -252,7 +254,4 @@ export class Midi {
 	}
 }
 
-navigator
-	.requestMIDIAccess()
-	.then(onMIDISuccess, onMIDIFailure)
-	.catch(onMIDIFailure);
+navigator.requestMIDIAccess().then(onMIDISuccess).catch(onMIDIFailure);
